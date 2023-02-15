@@ -20,4 +20,10 @@ extension FileTypeExtensions on FileType {
         return EDFLIB_FILETYPE_BDFPLUS;
     }
   }
+
+  bool isBdf() => this == FileType.bdf || this == FileType.bdfPlus;
+
+  bool isEdf() => this == FileType.edf || this == FileType.edfPlus;
+
+  bool isPlus() => this == FileType.bdfPlus || this == FileType.edfPlus;
 }
