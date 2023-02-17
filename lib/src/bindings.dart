@@ -968,6 +968,12 @@ const int EDFLIB_MAXSIGNALS = 640;
 
 const int EDFLIB_MAX_ANNOTATION_LEN = 512;
 
+const int EDFSEEK_SET = 0;
+
+const int EDFSEEK_CUR = 1;
+
+const int EDFSEEK_END = 2;
+
 const int EDFLIB_FILETYPE_EDF = 0;
 
 const int EDFLIB_FILETYPE_EDFPLUS = 1;

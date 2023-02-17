@@ -17,6 +17,7 @@ structs:
 macros:
   include:
     - 'EDFLIB_.*'
+    - 'EDFSEEK_.*'
 functions:
   include:
     - 'edf.*'
