@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:dartedflib/src/edf_error.dart';
 import 'package:dartedflib/src/file_type.dart';
@@ -190,6 +191,138 @@ class EdfWriter {
     _recordingStartTime = fileHeader[_startdateField];
     _birthdate = fileHeader[_birthdateField];
     _updateHeader();
+  }
+
+  /// Writes physical samples (uV, mA, Ohm) from data belonging to all signals
+  /// The physical samples will be converted to digital samples using the values
+  /// of physical maximum, physical minimum, digital maximum and digital minimum.
+  /// if the samplefrequency of all signals are equal, then the data could be
+  /// saved into a matrix with the size (N,signals) If the samplefrequency
+  /// is different, then sample_freq is a vector containing all the different
+  /// sample frequencies. The data is saved as list. Each list entry contains
+  /// a vector with the data of one signal.
+  /// If digital is True, digital signals (as directly from the ADC) will be expected.
+  /// (e.g. int16 from 0 to 2048)
+  /// All parameters must be already written into the bdf/edf-file.
+  void writeSamples(List<List<num>> dataList, [digital = false]) {
+    bool thereAreBlankSampleFrequencies =
+        _channels.any((c) => c[_sampleFrequencyField] == null);
+    if (thereAreBlankSampleFrequencies) {
+      throw EdfError("The 'sample_rate' parameter is deprecated. "
+          "Please use 'sample_frequency' instead.");
+    }
+
+    if (dataList.isEmpty) {
+      throw EdfError('Data list is empty');
+    }
+    if (dataList.length != _channels.length) {
+      throw EdfError(
+          'Number of channels (${_channels.length}) unequal to length of data (${dataList.length})');
+    }
+
+    if (digital) {
+      if (dataList.any((l) => l.any((v) => v is! int))) {
+        throw EdfError('Digital = True requires all signals in int');
+      }
+    }
+
+    // Check that all channels have different physical_minimum and physical_maximum
+    for (var chan in _channels) {
+      if (chan[_physicalMinField] == chan[_physicalMaxField]) {
+        throw EdfError(
+            'In chan ${chan[_labelField]} physical_min ${chan[_physicalMinField]} should be different from '
+            'physical_max ${chan[_physicalMaxField]}');
+      }
+    }
+
+    final List<int> ind = [];
+    var notAtEnd = true;
+    for (int i = 0; i < dataList.length; i++) {
+      ind.add(0);
+    }
+
+    var sampleFrequencies = List<int>.filled(dataList.length, 0);
+    for (int i = 0; i < dataList.length; i++) {
+      sampleFrequencies[i] = _getSampleFrequency(i);
+      if (dataList[i].length < ind[i] + sampleFrequencies[i]) {
+        notAtEnd = false;
+      }
+    }
+
+    var dataRecord = <num>[];
+
+    while (notAtEnd) {
+      dataRecord = <num>[];
+      for (int i = 0; i < dataList.length; i++) {
+        dataRecord
+            .addAll(dataList[i].sublist(ind[i], ind[i] + sampleFrequencies[i]));
+        ind[i] += sampleFrequencies[i];
+      }
+      int success = -1;
+      if (digital) {
+        final dataRecordNative =
+            _copyToNativeIntPointer(dataRecord.cast<int>());
+        success = dylib.blockwrite_digital_samples(_handle, dataRecordNative);
+        malloc.free(dataRecordNative);
+      } else {
+        final dataRecordNative =
+            _copyToNativeDoublePointer(dataRecord.cast<double>());
+        success = dylib.blockwrite_physical_samples(_handle, dataRecordNative);
+        malloc.free(dataRecordNative);
+      }
+
+      if (success < 0) {
+        throw EdfError('Unknown error while calling blockWriteSamples');
+      }
+
+      for (int i = 0; i < dataList.length; i++) {
+        if (dataList[i].length < ind[i] + sampleFrequencies[i]) {
+          notAtEnd = false;
+        }
+      }
+    }
+
+    for (int i = 0; i < dataList.length; i++) {
+      var lastSamples = List<num>.filled(sampleFrequencies[i], 0);
+      var lastSampleInd = dataList[i].length - ind[i];
+      lastSampleInd = min(lastSampleInd, sampleFrequencies[i]);
+      if (lastSampleInd > 0) {
+        lastSamples.replaceRange(
+            0, lastSampleInd, dataList[i].reversed.take(lastSampleInd));
+        int success = -1;
+        if (digital) {
+          final lastSamplesNative =
+              _copyToNativeIntPointer(lastSamples.cast<int>());
+          success = dylib.write_digital_samples(_handle, lastSamplesNative);
+          malloc.free(lastSamplesNative);
+        } else {
+          final lastSamplesNative =
+              _copyToNativeDoublePointer(lastSamples.cast<double>());
+          success = dylib.write_physical_samples(_handle, lastSamplesNative);
+          malloc.free(lastSamplesNative);
+        }
+
+        if (success < 0) {
+          throw EdfError('Unknown error while calling writeSamples');
+        }
+      }
+    }
+  }
+
+  static Pointer<Int> _copyToNativeIntPointer(List<int> values) {
+    final ptr = malloc.allocate<Int>(sizeOf<Int>() * values.length);
+    for (int i = 0; i < values.length; i++) {
+      ptr.elementAt(i).value = values[i];
+    }
+    return ptr;
+  }
+
+  static Pointer<Double> _copyToNativeDoublePointer(List<double> values) {
+    final ptr = malloc.allocate<Double>(sizeOf<Double>() * values.length);
+    for (int i = 0; i < values.length; i++) {
+      ptr.elementAt(i).value = values[i];
+    }
+    return ptr;
   }
 
   static int _determineNumberOfAnnotations(FileType fileType) {

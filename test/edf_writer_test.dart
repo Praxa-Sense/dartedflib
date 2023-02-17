@@ -145,5 +145,19 @@ void main() async {
         }
       });
     });
+
+    group('writeSamples', () {
+      test('simple signal', () {
+        final data = [List<num>.filled(500, 0.1), List.filled(500, 0.2)];
+        final writer = EdfWriter(fileName: filePath, numberOfChannels: 2);
+        try {
+          expect(File(filePath).existsSync(), true);
+          writer.setSignalHeaders({'sample_frequency': 100});
+          writer.writeSamples(data);
+        } finally {
+          writer.close();
+        }
+      });
+    });
   });
 }
