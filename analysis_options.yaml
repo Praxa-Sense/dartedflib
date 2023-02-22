@@ -16,48 +16,47 @@ linter:
   - directives_ordering
   - avoid_relative_lib_imports
   - unawaited_futures
-  - dead_code
 
 dart_code_metrics:
   rules:
-  - member-ordering-extended:
-    order:
-    - static-const-fields
-    - static-final-fields
-    - constructors
-    - public-fields
-    - private-fields
-    - public-getters-setters
-    - public-static-methods
-    - public-methods
-    - overridden-public-methods
-    - private-static-methods
-    - private-getters-setters
-    - private-methods
-  - prefer-match-file-name:
-    exclude:
-      - test/**
-  - prefer-first
-  - prefer-last
-  - prefer-commenting-analyzer-ignores
-  - avoid-unnecessary-conditionals
-  - avoid-redundant-async
-  - avoid-passing-async-when-sync-expected:
-    exclude:
-      - test/**
-  - arguments-ordering
-  - avoid-double-slash-imports
-  - avoid-unnecessary-type-casts
-  - avoid-cascade-after-if-null
-  - avoid-collection-methods-with-unrelated-types
-  - avoid-duplicate-exports
-  - avoid-global-state
-  - avoid-missing-enum-constant-in-map
-  - avoid-top-level-members-in-tests
-  - avoid-unnecessary-type-assertions
-  - avoid-unrelated-type-assertions
-  - avoid-unused-parameters
-  - double-literal-format
-  - no-boolean-literal-compare
-  - no-empty-block
-  - prefer-correct-test-file-name
+    - member-ordering-extended:
+        order:
+          - static-const-fields
+          - static-final-fields
+          - constructors
+          - public-fields
+          - private-fields
+          - public-getters-setters
+          - public-static-methods
+          - public-methods
+          - overridden-public-methods
+          - private-static-methods
+          - private-getters-setters
+          - private-methods
+    - prefer-match-file-name:
+        exclude:
+          - test/**
+    - prefer-first
+    - prefer-last
+    - prefer-commenting-analyzer-ignores
+    - avoid-unnecessary-conditionals
+    - avoid-redundant-async
+    - avoid-passing-async-when-sync-expected:
+      exclude:
+        - test/**
+    - arguments-ordering
+    - avoid-double-slash-imports
+    - avoid-unnecessary-type-casts
+    - avoid-cascade-after-if-null
+    - avoid-collection-methods-with-unrelated-types
+    - avoid-duplicate-exports
+    - avoid-global-state
+    - avoid-missing-enum-constant-in-map
+    - avoid-top-level-members-in-tests
+    - avoid-unnecessary-type-assertions
+    - avoid-unrelated-type-assertions
+    - avoid-unused-parameters
+    - double-literal-format
+    - no-boolean-literal-compare
+    - no-empty-block
+    - prefer-correct-test-file-name

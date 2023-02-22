@@ -15,6 +15,19 @@ extension on num {
   }
 }
 
+extension on Array<Char> {
+  String toDartString() {
+    final stringList = <int>[];
+    var i = 0;
+    while (this[i] != 0) {
+      stringList.add(this[i]);
+      i++;
+    }
+
+    return String.fromCharCodes(stringList).trimRight();
+  }
+}
+
 class EdfReader {
   static const openErrors = {
     EDFLIB_MALLOC_ERROR: "malloc error",
@@ -44,6 +57,11 @@ class EdfReader {
   final Pointer<EdfHdr> _handle = calloc<EdfHdr>();
   final String _fileName;
 
+  /// File duration in seconds.
+  int get fileDuration => _handle.ref.file_duration ~/ EDFLIB_TIME_DIMENSION;
+  int get signalsInFile => _handle.ref.edfsignals;
+  int get dataRecordsInFile => _handle.ref.datarecords_in_file;
+
   void close() {
     calloc.free(_handle);
   }
@@ -67,21 +85,22 @@ class EdfReader {
     if (length != null && length < 0) {
       return Iterable<num>.empty();
     }
+
     final List<int> numberOfSamples = getNumberOfSamples();
-    if (0 <= channel && channel < numberOfSamples.length) {
-      if (length == null) {
-        length = numberOfSamples[channel];
-      } else if (length > numberOfSamples[channel]) {
-        return Iterable<num>.empty();
-      }
-      if (digital) {
-        return _readDigitalSignal(channel, start, length);
-      } else {
-        return _readSignal(channel, start, length);
-      }
-    } else {
+    if (0 > channel || channel >= numberOfSamples.length) {
       throw EdfError(
           'Trying to access channel $channel, but only $signalsInFile channels found');
+    }
+
+    if (length == null) {
+      length = numberOfSamples[channel];
+    } else if (length > numberOfSamples[channel]) {
+      return Iterable<num>.empty();
+    }
+    if (digital) {
+      return _readDigitalSignal(channel, start, length);
+    } else {
+      return _readSignal(channel, start, length);
     }
   }
 
@@ -112,11 +131,91 @@ class EdfReader {
     return result;
   }
 
-  int get signalsInFile => _handle.ref.edfsignals;
-  int get dataRecordsInFile => _handle.ref.datarecords_in_file;
+  DateTime getStartDatetime() {
+    final subsecond = (_handle.ref.starttime_subsecond / 100).round();
+    return DateTime(
+        _handle.ref.startdate_year,
+        _handle.ref.startdate_month,
+        _handle.ref.startdate_day,
+        _handle.ref.starttime_hour,
+        _handle.ref.starttime_minute,
+        _handle.ref.starttime_second,
+        subsecond);
+  }
+
+  String getPatientCode() {
+    return _handle.ref.patientcode.toDartString();
+  }
+
+  String getPatientName() {
+    return _handle.ref.patient_name.toDartString();
+  }
+
+  String getGender() {
+    return _handle.ref.gender.toDartString();
+  }
+
+  DateTime getBirthdate() {
+    return DateTime(_handle.ref.birthdate_year, _handle.ref.birthdate_month,
+        _handle.ref.birthdate_day);
+  }
+
+  String getPatientAdditional() {
+    return _handle.ref.patient_additional.toDartString();
+  }
+
+  String getTechnician() {
+    return _handle.ref.technician.toDartString();
+  }
+
+  String getAdminCode() {
+    return _handle.ref.admincode.toDartString();
+  }
+
+  String getEquipment() {
+    return _handle.ref.equipment.toDartString();
+  }
+
+  String getRecordingAdditional() {
+    return _handle.ref.recording_additional.toDartString();
+  }
+
+  List<String> getSignalLabels() {
+    final labels = <String>[];
+    for (var i = 0; i < signalsInFile; i++) {
+      labels.add(_handle.ref.signalparam[i].label.toDartString());
+    }
+    return labels;
+  }
+
+  String getLabel(int channel) {
+    _checkChannelIndex(channel);
+    return _handle.ref.signalparam[channel].label.toDartString();
+  }
+
+  String getPrefilter(int channel) {
+    _checkChannelIndex(channel);
+    return _handle.ref.signalparam[channel].prefilter.toDartString();
+  }
+
+  String getTransducer(int channel) {
+    _checkChannelIndex(channel);
+    return _handle.ref.signalparam[channel].transducer.toDartString();
+  }
+
+  String getPhysicalDimension(int channel) {
+    _checkChannelIndex(channel);
+    return _handle.ref.signalparam[channel].physdimension.toDartString();
+  }
 
   int _samplesInChannel(int channel) {
     return _handle.ref.signalparam[channel].smp_in_file;
+  }
+
+  void _checkChannelIndex(int channel) {
+    if (channel < 0 || channel >= signalsInFile) {
+      throw EdfError('Index $channel is out of bounds for $signalsInFile');
+    }
   }
 
   Iterable<int> _readDigitalSignal(int channel, int start, int length) sync* {
