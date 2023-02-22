@@ -283,11 +283,11 @@ class EdfWriter {
     }
 
     for (int i = 0; i < dataList.length; i++) {
-      var lastSamples = List<num>.filled(sampleFrequencies[i], 0);
+      var lastSamples = List<num>.filled(sampleFrequencies[i], 0.0);
       var lastSampleInd = dataList[i].length - ind[i];
       lastSampleInd = min(lastSampleInd, sampleFrequencies[i]);
       if (lastSampleInd > 0) {
-        lastSamples.replaceRange(
+        lastSamples.setRange(
             0, lastSampleInd, dataList[i].reversed.take(lastSampleInd));
         int success = -1;
         if (digital) {
