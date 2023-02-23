@@ -44,7 +44,7 @@
         "bindings.dart",
     ],
     "dart.env": {
-        "EDFLIB_PATH": "C:/Users/MarnixKraus/Source/Repos/EDFlib"
+        "EDFLIB_PATH": "."
     },
     "editor.formatOnSave": true,
     "files.trimFinalNewlines": true,

@@ -9,9 +9,11 @@ import 'package:ffi/ffi.dart';
 import 'dylib.dart';
 
 extension on String {
+  /// Cast a string into a native [Char] array.
   Pointer<Char> toCharPointer() => toNativeUtf8().cast<Char>();
 }
 
+/// Simple interface for writing edf files.
 class EdfWriter {
   // signal header fields
   static const _transducerField = 'transducer';
@@ -37,6 +39,9 @@ class EdfWriter {
   static const _startdateField = 'startdate';
   static const _birthdateField = 'birthdate';
 
+  /// Initializes a new edf file at [fileName], ready for writing.
+  ///
+  /// [numberOfChannels] is the number of channels without the annotation channel.
   EdfWriter(
       {required String fileName,
       required int numberOfChannels,
@@ -97,6 +102,7 @@ class EdfWriter {
   DateTime? _birthdate;
 
   /// Duration of the record in units of 10 ms.
+  /// This field is not often altered and therefore the interface does not expose it yet.
   int _duration = 1;
   final int _numberOfAnnotations;
   final int _numberOfChannels;

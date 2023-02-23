@@ -17,6 +17,11 @@ extension on num {
 }
 
 extension on Array<Char> {
+  /// Convert the char array to a dart string.
+  /// Searches for a 0 terminator.
+  ///
+  /// Arrays cannot be casted to pointers. There is an open ticket for this:
+  /// https://github.com/dart-lang/ffigen/issues/504
   String toDartString() {
     final stringList = <int>[];
     var i = 0;
@@ -29,8 +34,9 @@ extension on Array<Char> {
   }
 }
 
+/// This provides a simple interface to read EDF, EDF+, BDF and BDF+ files.
 class EdfReader {
-  static const openErrors = {
+  static const _openErrors = {
     EDFLIB_MALLOC_ERROR: "malloc error",
     EDFLIB_NO_SUCH_FILE_OR_DIRECTORY:
         "can not open file, no such file or directory",
@@ -47,7 +53,7 @@ class EdfReader {
     EDFLIB_INVALID_READ_ANNOTS_VALUE: "an annotation value could not be read",
   };
 
-  /// EdfReader(file_name, annotations_mode, check_file_size)
+  /// Open an EDF file in read-only mode.
   EdfReader(String fileName,
       {AnnotationsMode annotationsMode = AnnotationsMode.readAllAnnotations})
       : _fileName = fileName {
@@ -60,10 +66,19 @@ class EdfReader {
 
   /// File duration in seconds.
   int get fileDuration => _handle.ref.file_duration ~/ EDFLIB_TIME_DIMENSION;
+
+  /// Number of channels/signals in the opened file.
   int get signalsInFile => _handle.ref.edfsignals;
   int get dataRecordsInFile => _handle.ref.datarecords_in_file;
+
+  /// Full path to the file that was opened.
+  String get fileName => _fileName;
+
+  /// The file type of the opened file.
+  /// Is null when an error occurred while reading.
   FileType? get fileType => FileType.fromInt(_handle.ref.filetype);
 
+  /// Close the reader to ensure that the process is not holding on to it.
   void close() {
     if (_handle.ref.handle >= 0) {
       dylib.close_file(_handle.ref.handle);
@@ -73,16 +88,11 @@ class EdfReader {
   }
 
   /// Returns the physical data of signal chn. When start and n is set, a subset is returned
-  ///   Parameters
-  ///   ----------
-  ///   [channel] : [int]
-  ///       channel number
-  ///   [start] : [int]
-  ///       start pointer (default is 0)
-  ///   [length] : [int]
-  ///       length of data to read (default is None, by which the complete data of the channel are returned)
-  ///   [digital] : [bool]
-  ///       will return the signal in original digital values instead of physical values
+  ///
+  /// [channel] Channel number.
+  /// [start] Start pointer (default is 0).
+  /// [length] Length of data to read (default is null, by which the complete data of the channel are returned).
+  /// [digital] Will return the signal in original digital values instead of physical values.
   Iterable<num> readSignal(int channel,
       {int start = 0, int? length, bool digital = false}) {
     if (start < 0) {
@@ -121,22 +131,21 @@ class EdfReader {
   }
 
   /// Returns the samplefrequency of signal.
-  /// [channel] : [int] channel number
+  ///
+  /// [channel] channel number.
   num getSampleFrequency(int channel) {
     return _handle.ref.signalparam[channel].smp_in_datarecord
         .toDouble()
         .roundToDecimals(3);
   }
 
+  /// Get the number of samples per channel.
   List<int> getNumberOfSamples() {
-    final result = <int>[];
-    for (int i = 0; i < signalsInFile; i++) {
-      result.add(_samplesInChannel(i));
-    }
-
-    return result;
+    return List<int>.generate(
+        signalsInFile, (index) => _samplesInChannel(index));
   }
 
+  /// Retrieve the start DateTime.
   DateTime getStartDatetime() {
     final subsecond = (_handle.ref.starttime_subsecond / 100).round();
     return DateTime(
@@ -149,66 +158,77 @@ class EdfReader {
         subsecond);
   }
 
+  /// Returns the patient code.
   String getPatientCode() {
     return _handle.ref.patientcode.toDartString();
   }
 
+  /// Returns the patient name.
   String getPatientName() {
     return _handle.ref.patient_name.toDartString();
   }
 
+  /// Returns the gender.
   String getGender() {
     return _handle.ref.gender.toDartString();
   }
 
+  /// Returns the birth date.
   DateTime getBirthdate() {
     return DateTime(_handle.ref.birthdate_year, _handle.ref.birthdate_month,
         _handle.ref.birthdate_day);
   }
 
+  /// Returns the additional patient information.
   String getPatientAdditional() {
     return _handle.ref.patient_additional.toDartString();
   }
 
+  /// Returns the technician.
   String getTechnician() {
     return _handle.ref.technician.toDartString();
   }
 
+  /// Returns the administrator code.
   String getAdminCode() {
     return _handle.ref.admincode.toDartString();
   }
 
+  /// Returns the equipment.
   String getEquipment() {
     return _handle.ref.equipment.toDartString();
   }
 
+  /// Returns the additional recording information.
   String getRecordingAdditional() {
     return _handle.ref.recording_additional.toDartString();
   }
 
+  /// Returns the labels for each channel/signal.
   List<String> getSignalLabels() {
-    final labels = <String>[];
-    for (var i = 0; i < signalsInFile; i++) {
-      labels.add(_handle.ref.signalparam[i].label.toDartString());
-    }
-    return labels;
+    return List<String>.generate(signalsInFile,
+        (index) => _handle.ref.signalparam[index].label.toDartString());
   }
 
+  /// Returns the label for the given channel.
   String getLabel(int channel) {
     _checkChannelIndex(channel);
     return _handle.ref.signalparam[channel].label.toDartString();
   }
 
+  /// Returns the prefilter for the given channel.
   String getPrefilter(int channel) {
     _checkChannelIndex(channel);
     return _handle.ref.signalparam[channel].prefilter.toDartString();
   }
 
+  /// Returns the transducer.
   String getTransducer(int channel) {
     _checkChannelIndex(channel);
     return _handle.ref.signalparam[channel].transducer.toDartString();
   }
 
+  /// Gets the physical dimension.
   String getPhysicalDimension(int channel) {
     _checkChannelIndex(channel);
     return _handle.ref.signalparam[channel].physdimension.toDartString();
@@ -264,7 +284,7 @@ class EdfReader {
         annotationsMode.toNative());
 
     if (result != 0) {
-      final String msg = openErrors[_handle.ref.filetype] ?? 'unknown error';
+      final String msg = _openErrors[_handle.ref.filetype] ?? 'unknown error';
       throw EdfError('$msg for file $fileName');
     }
   }
