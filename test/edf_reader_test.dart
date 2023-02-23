@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:dartedflib/src/edf_error.dart';
 import 'package:dartedflib/src/edf_reader.dart';
@@ -10,7 +9,7 @@ void main() {
   late final String edfDataFile;
   late final String edfSubsecondFile;
 
-  setUp(() {
+  setUpAll(() {
     edfDataFile =
         path.join(Directory.current.path, 'test', 'data', 'test_generator.edf');
     edfSubsecondFile =

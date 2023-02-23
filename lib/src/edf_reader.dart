@@ -7,6 +7,7 @@ import 'package:ffi/ffi.dart';
 import 'annotations_mode.dart';
 import 'bindings.dart';
 import 'dylib.dart';
+import 'file_type.dart';
 
 extension on num {
   num roundToDecimals(int places) {
@@ -61,8 +62,13 @@ class EdfReader {
   int get fileDuration => _handle.ref.file_duration ~/ EDFLIB_TIME_DIMENSION;
   int get signalsInFile => _handle.ref.edfsignals;
   int get dataRecordsInFile => _handle.ref.datarecords_in_file;
+  FileType? get fileType => FileType.fromInt(_handle.ref.filetype);
 
   void close() {
+    if (_handle.ref.handle >= 0) {
+      dylib.close_file(_handle.ref.handle);
+      _handle.ref.handle = -1;
+    }
     calloc.free(_handle);
   }
 

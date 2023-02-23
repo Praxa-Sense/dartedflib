@@ -1,10 +1,28 @@
+import 'package:dartedflib/src/edf_error.dart';
+
 import 'bindings.dart';
 
 enum FileType {
   edf,
   edfPlus,
   bdf,
-  bdfPlus,
+  bdfPlus;
+
+  static FileType fromInt(int native) {
+    switch (native) {
+      case 0:
+        return FileType.edf;
+      case 1:
+        return FileType.edfPlus;
+      case 2:
+        return FileType.bdf;
+      case 3:
+        return FileType.bdfPlus;
+      default:
+        throw EdfError(
+            'Unable to change native EDFLIB filetype $native to a valid file type');
+    }
+  }
 }
 
 extension FileTypeExtensions on FileType {
