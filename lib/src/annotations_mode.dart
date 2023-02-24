@@ -3,10 +3,8 @@ import 'bindings.dart';
 enum AnnotationsMode {
   doNotReadAnnotations,
   readAnnotations,
-  readAllAnnotations,
-}
+  readAllAnnotations;
 
-extension AnnotationsModeExtensions on AnnotationsMode {
   int toNative() {
     switch (this) {
       case AnnotationsMode.doNotReadAnnotations:

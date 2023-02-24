@@ -1,5 +1,10 @@
-import 'dart:io';
+class EdfError extends Error {
+  EdfError([this.message = '']);
 
-class EdfError extends OSError {
-  const EdfError([super.message = '', super.errorCode = OSError.noErrorCode]);
+  final String message;
+
+  @override
+  String toString() {
+    return 'EdfError: $message';
+  }
 }

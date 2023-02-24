@@ -42,14 +42,14 @@ class EdfReader {
         "can not open file, no such file or directory",
     EDFLIB_FILE_CONTAINS_FORMAT_ERRORS:
         "the file is not EDF(+) or BDF(+) compliant (it contains format errors)",
-    EDFLIB_MAXFILES_REACHED: "to many files opened",
+    EDFLIB_MAXFILES_REACHED: "too many files opened",
     EDFLIB_FILE_READ_ERROR: "a read error occurred",
     EDFLIB_FILE_ALREADY_OPENED: "file has already been opened",
-    EDFLIB_FILETYPE_ERROR: "Wrong file type",
+    EDFLIB_FILETYPE_ERROR: "wrong file type",
     EDFLIB_FILE_WRITE_ERROR: "a write error occurred",
-    EDFLIB_NUMBER_OF_SIGNALS_INVALID: "The number of signals is invalid",
+    EDFLIB_NUMBER_OF_SIGNALS_INVALID: "the number of signals is invalid",
     EDFLIB_FILE_IS_DISCONTINUOUS:
-        "The file is discontinuous and cannot be read",
+        "the file is discontinuous and cannot be read",
     EDFLIB_INVALID_READ_ANNOTS_VALUE: "an annotation value could not be read",
   };
 
@@ -87,7 +87,7 @@ class EdfReader {
     calloc.free(_handle);
   }
 
-  /// Returns the physical data of signal chn. When start and n is set, a subset is returned
+  /// Returns the physical data of signal [channel]. When [start] or [length] is set, a subset is returned.
   ///
   /// [channel] Channel number.
   /// [start] Start pointer (default is 0).

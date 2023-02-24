@@ -1,10 +1,10 @@
 /// Wrapper around edflib by Teuniz.
 ///
 /// # Import
-/// import 'edflib/edflib.dart';
+/// import 'package:dartedflib/edflib.dart';
 ///
 /// # Getting Started
-/// TODO: Some info about how to use this library. And something about the ENV variable to the library itself.
+/// See README.md in the repository for more info
 library dartedflib;
 
 export 'src/annotations_mode.dart';

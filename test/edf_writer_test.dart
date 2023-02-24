@@ -2,9 +2,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:dartedflib/edflib.dart';
-import 'package:dartedflib/src/edf_error.dart';
-import 'package:dartedflib/src/edf_reader.dart';
-import 'package:dartedflib/src/file_type.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:random_string/random_string.dart';
@@ -234,7 +231,7 @@ void main() async {
         }
       });
 
-      test('writeSamples ints as digital', () {
+      test('writeSamples integers as digital', () {
         const dMin = 0;
         const dMax = 1024;
         const pMin = 0.0;

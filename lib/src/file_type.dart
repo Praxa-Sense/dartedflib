@@ -20,9 +20,7 @@ enum FileType {
         return null;
     }
   }
-}
 
-extension FileTypeExtensions on FileType {
   int toNative() {
     switch (this) {
       case FileType.edf:

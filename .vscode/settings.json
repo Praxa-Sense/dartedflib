@@ -15,11 +15,17 @@
         "EDFSEEK",
         "edfsignals",
         "ffigen",
+        "linspace",
         "malloc",
         "MAXFILES",
+        "numdart",
         "patientcode",
         "patientname",
+        "physdimension",
+        "Praxa",
         "prefilter",
+        "pubspec",
+        "pyedflib",
         "samplefrequency",
         "signalparam",
         "Startdate",
@@ -86,4 +92,5 @@
         "editor.wordBasedSuggestions": false,
     },
     "files.insertFinalNewline": true,
+    "searchEverywhere.include": "**/*.{dart,yaml,json,h}"
 }

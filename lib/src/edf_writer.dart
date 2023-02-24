@@ -103,7 +103,8 @@ class EdfWriter {
 
   /// Duration of the record in units of 10 ms.
   /// This field is not often altered and therefore the interface does not expose it yet.
-  int _duration = 1;
+  /// When exposed, it will not be final anymore.
+  final int _duration = 1;
   final int _numberOfAnnotations;
   final int _numberOfChannels;
   final List<Map<String, dynamic>> _channels = [];
@@ -115,7 +116,8 @@ class EdfWriter {
   }
 
   /// Sets the parameter for signal [channelNumber].
-  /// channel_info should be a [Map] with these values:
+  ///
+  /// [signalHeader] should be a [Map] with these values:
   /// 'label' : [String]
   ///   channel label (string, <= 16 characters, must be unique)
   /// 'dimension' : [String]
@@ -141,7 +143,7 @@ class EdfWriter {
     _updateHeader();
   }
 
-  /// Sets the parameters for all signals
+  /// Sets the parameters for all signals.
   ///
   /// [signalHeader] is a [Map] of strings of the following format:
   /// 'label' : [String]
@@ -207,7 +209,7 @@ class EdfWriter {
   /// is different, then sample_freq is a vector containing all the different
   /// sample frequencies. The data is saved as list. Each list entry contains
   /// a vector with the data of one signal.
-  /// If digital is True, digital signals (as directly from the ADC) will be expected.
+  /// If [digital] is true, digital signals (as directly from the ADC) will be expected.
   /// (e.g. int16 from 0 to 2048)
   /// All parameters must be already written into the bdf/edf-file.
   void writeSamples(List<List<num>> dataList, [digital = false]) {
