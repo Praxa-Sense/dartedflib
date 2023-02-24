@@ -1,0 +1,30 @@
+name: EdfLib
+description: >-
+  edflib: cross-platform library for reading and writing edf files
+output: 'lib/src/bindings.dart'
+preamble: |
+  // ignore_for_file: type=lint
+headers:
+  entry-points:
+    - 'edflib.h'
+structs:
+  include:
+    - 'edf_.*'
+  rename:
+    'edf_param_struct': 'EdfParam'
+    'edf_annotation_struct': 'EdfAnnotation'
+    'edf_hdr_struct': 'EdfHdr'
+macros:
+  include:
+    - 'EDFLIB_.*'
+    - 'EDFSEEK_.*'
+functions:
+  include:
+    - 'edf.*'
+  rename:
+    'edflib_(.*)': '$1'
+    'edf_(.*)': '$1'
+    'edf(.*)': '$1'
+globals:
+  include:
+    - 'EDFLIB_.*'
