@@ -22,6 +22,18 @@ dependencies:
       ref: dev
 ```
 
+### Compiling EDFLib
+
+Install gcc on your computer.
+
+```sh
+# windows
+gcc -Wall -Wextra -Wshadow -Wformat-nonliteral -Wformat-security -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE -shared edflib.c -o edflib.dll
+
+# linux
+gcc -Wall -Wextra -Wshadow -Wformat-nonliteral -Wformat-security -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE -shared edflib.c -o libedflib.so
+```
+
 ## Usage
 
 ```dart
@@ -63,5 +75,7 @@ To run the unit tests via vs code, add the dynamic library to the root folder of
 The .edf-files found in `test/data` are direct copies from [pyedflib/tests/data](https://github.com/holgern/pyedflib/tree/v0.1.28/pyedflib/tests/data).
 
 ### Regenerating bindings.dart
+
+Make sure you have installed LLVM as described in [ffigen](https://pub.dev/packages/ffigen).
 
 In tasks.json there is a task to generate `bindings.dart`. It's important to notice that the `edflib.h` file in the root folder is taken for that. If you want to upgrade to a later version of EDFLib, replace `edflib.h` with a newer version and run the task.
