@@ -21,11 +21,6 @@ void main() {
       test('edf file from test generator', () {
         final reader = EdfReader(edfDataFile);
         try {
-          // TODO: Implement annotations
-          // ann_index, ann_duration, ann_text = f.readAnnotations()
-          // np.testing.assert_almost_equal(ann_index[0], 0)
-          // np.testing.assert_almost_equal(ann_index[1], 600)
-
           expect(reader.signalsInFile, 11);
           expect(reader.dataRecordsInFile, 600);
 
