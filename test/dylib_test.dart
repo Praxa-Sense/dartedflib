@@ -1,4 +1,4 @@
-import 'package:dartedflib/edflib.dart';
+import 'package:dartedflib/dartedflib.dart';
 import 'package:test/test.dart';
 import 'package:version/version.dart';
 

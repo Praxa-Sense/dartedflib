@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dartedflib/edflib.dart';
+import 'package:dartedflib/dartedflib.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:random_string/random_string.dart';
