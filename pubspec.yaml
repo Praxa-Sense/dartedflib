@@ -2,6 +2,8 @@ name: dartedflib
 description: EDF lib for Dart (FFI bindings to edflib, a C-library created by Teuniz.net)
 version: 0.1.0
 
+repository: https://github.com/Praxa-Sense/dartedflib
+
 environment:
   sdk: '>=2.17.6 <3.0.0'
 
