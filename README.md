@@ -12,14 +12,11 @@ This package uses [dart:ffi](https://dart.dev/guides/libraries/c-interop) to cal
 Make sure that you have installed/compiled EDFLib on your computer, and that it can be found by dylib.
 For example, you can set `EDFLIB_PATH` to the full path of the dynamic library (.dll/.so/.dylib), or to the folder where it can be found. (e.g. `EDFLIB_PATH=C:\edflib\edflib.dll`).
 
-Add `dartedflib` to `pubspec.yaml`. Since the package is not yet published, you can do that via a git reference.
+Add `dartedflib` to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  dartedflib:
-    git:
-      url: git@github.com:Praxa-Sense/dartedflib.git
-      ref: dev
+  dartedflib: ^0.1.0
 ```
 
 ### Compiling EDFLib
@@ -60,7 +57,7 @@ try {
 
 ## Additional information
 
-This package is currently developed by Praxa Sense and will eventually become available via pub.
+This package is currently developed by Praxa Sense.
 
 ### Tests
 
